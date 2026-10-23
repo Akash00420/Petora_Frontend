@@ -14,6 +14,7 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [form, setForm] = useState({ otp: "", password: "", confirmPassword: "" });
   const [fieldError, setFieldError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     dispatch(clearAuthStatus());
@@ -113,7 +114,13 @@ const ForgotPassword = () => {
         <div className="form-row">
           <div className="form-group">
             <label htmlFor="password">New password</label>
-            <input id="password" name="password" type="password" value={form.password} onChange={handleChange} />
+            <input
+              id="password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              value={form.password}
+              onChange={handleChange}
+            />
           </div>
 
           <div className="form-group">
@@ -121,11 +128,17 @@ const ForgotPassword = () => {
             <input
               id="confirmPassword"
               name="confirmPassword"
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={form.confirmPassword}
               onChange={handleChange}
             />
           </div>
+        </div>
+
+        <div className="auth-links">
+          <button type="button" className="link-button" onClick={() => setShowPassword(!showPassword)}>
+            {showPassword ? "🙈 Hide passwords" : "👁 Show passwords"}
+          </button>
         </div>
 
         <button className="btn btn-primary btn-block" type="submit" disabled={loading}>
