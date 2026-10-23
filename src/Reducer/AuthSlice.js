@@ -21,13 +21,15 @@ export const fetchMe = makeThunk("auth/me", async () => {
   return res.data.user;
 });
 
+// Step 1: email an OTP
 export const forgotPassword = makeThunk("auth/forgot", async (email) => {
   const res = await api.post("/auth/forgot-password", { email });
   return res.data.message;
 });
 
-export const resetPassword = makeThunk("auth/reset", async ({ token, password }) => {
-  const res = await api.put(`/auth/reset-password/${token}`, { password });
+// Step 2: check the OTP, set the new password and log in
+export const resetPassword = makeThunk("auth/reset", async ({ email, otp, password }) => {
+  const res = await api.put("/auth/reset-password", { email, otp, password });
   saveAuth(res.data.token, res.data.user);
   return res.data;
 });
