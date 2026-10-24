@@ -1,16 +1,20 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import { Lock, Pencil, Camera, BadgeCheck, CalendarDays, TriangleAlert, ShieldCheck } from "lucide-react";
-import { fetchMe, logoutUser } from "../Reducer/AuthSlice";
-import { formatDate } from "../utils/helpers";
+import { fetchMe, logoutUser, uploadProfilePhoto } from "../Reducer/AuthSlice";
+import { fileUrl, formatDate } from "../utils/helpers";
 import Loader from "../components/Loader";
 
 const Profile = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user, loading, error } = useSelector((state) => state.auth);
+
+  const fileInputRef = useRef(null);
+  const [preview, setPreview] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [photoError, setPhotoError] = useState(""); // validation errors only
 
   useEffect(() => {
     dispatch(fetchMe());
@@ -21,7 +25,32 @@ const Profile = () => {
     navigate("/login");
   };
 
-  if (!user) return loading ? <Loader text="Loading profile..." /> : null;
+  const handlePhotoChange = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allows picking the same file again later
+    if (!file) return;
+
+    if (!["image/png", "image/jpeg"].includes(file.type)) {
+      return setPhotoError("Please choose a PNG or JPG image");
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      return setPhotoError("Image must be 5MB or smaller");
+    }
+
+    setPhotoError("");
+    setPreview(URL.createObjectURL(file)); // show it instantly
+    setUploading(true);
+    try {
+      await dispatch(uploadProfilePhoto(file)).unwrap();
+    } catch {
+      setPreview(""); // server error is shown by the {error} alert below
+    }
+    setUploading(false);
+  };
+
+console.log("avatar:", user?.avatar, "url:", user?.avatar && fileUrl(user.avatar));
+
+if (!user) return loading ? <Loader text="Loading profile..." /> : null;
 
   const rows = [
     ["Name", user.name],
@@ -56,8 +85,7 @@ const Profile = () => {
           </nav>
           <h1>My profile</h1>
           <p className="page-sub">
-            Manage your personal credentials, contact details, and emergency
-            communication reach.
+            Manage your personal credentials, contact details, and emergency communication reach.
           </p>
         </div>
 
@@ -75,20 +103,37 @@ const Profile = () => {
 
       <section className="card profile-card">
         <div className="profile-photo-panel">
-          <div className="profile-photo avatar">
-            {user.photo ? (
-              <img src={user.photo} alt={user.name} />
+          <div className={`profile-photo ${uploading ? "uploading" : ""}`}>
+            {preview || user.avatar ? (
+              <img src={preview || fileUrl(user.avatar)} alt={user.name} />
             ) : (
               <span>{user.name?.charAt(0).toUpperCase()}</span>
             )}
-            <button type="button" className="photo-edit" aria-label="Change photo">
+
+            <button
+              type="button"
+              className="photo-edit"
+              aria-label="Change photo"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+            >
               <Camera size={14} />
             </button>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/png,image/jpeg"
+              hidden
+              onChange={handlePhotoChange}
+            />
           </div>
+
           <span className="pill pill-green">
             <BadgeCheck size={13} /> Verified Owner
           </span>
-          <small className="photo-hint">PNG or JPG up to 5MB</small>
+          <small className="photo-hint">{uploading ? "Uploading..." : "PNG or JPG up to 5MB"}</small>
+          {photoError && <small className="field-error">{photoError}</small>}
         </div>
 
         <div className="profile-info">
@@ -106,9 +151,7 @@ const Profile = () => {
             ))}
           </dl>
 
-          <p className="profile-note">
-            All registered tags will direct finder queries to these details.
-          </p>
+          <p className="profile-note">All registered tags will direct finder queries to these details.</p>
         </div>
       </section>
 
@@ -122,7 +165,9 @@ const Profile = () => {
               <h3>Emergency Alert Broadcast</h3>
               <p>Contact preferences if a pet goes missing</p>
             </div>
-            <Link to="/alerts" className="info-link">Manage</Link>
+            <Link to="/alerts" className="info-link">
+              Manage
+            </Link>
           </div>
 
           <div className="info-item">

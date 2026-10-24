@@ -21,6 +21,15 @@ export const fetchMe = makeThunk("auth/me", async () => {
   return res.data.user;
 });
 
+// Upload / replace the profile photo (multipart, field name "photo")
+export const uploadProfilePhoto = makeThunk("auth/uploadPhoto", async (file) => {
+  const formData = new FormData();
+  formData.append("photo", file);
+
+  const res = await api.put("/auth/profile/photo", formData);
+  return res.data.user;
+});
+
 // Step 1: email an OTP
 export const forgotPassword = makeThunk("auth/forgot", async (email) => {
   const res = await api.post("/auth/forgot-password", { email });
@@ -58,13 +67,18 @@ const authSlice = createSlice({
       state.user = action.payload.user;
     };
 
+    // merge the fresh user into state and keep the saved session in sync
+    const mergeUser = (state, action) => {
+      state.user = { ...state.user, ...action.payload };
+      if (state.token) saveAuth(state.token, state.user);
+    };
+
     builder
       .addCase(registerUser.fulfilled, setSession)
       .addCase(loginUser.fulfilled, setSession)
       .addCase(resetPassword.fulfilled, setSession)
-      .addCase(fetchMe.fulfilled, (state, action) => {
-        state.user = { ...state.user, ...action.payload };
-      })
+      .addCase(fetchMe.fulfilled, mergeUser)
+      .addCase(uploadProfilePhoto.fulfilled, mergeUser)
       .addCase(forgotPassword.fulfilled, (state, action) => {
         state.message = action.payload;
       })
