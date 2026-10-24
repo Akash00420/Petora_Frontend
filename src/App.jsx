@@ -20,6 +20,8 @@ import PetDetails from "./pages/PetDetails";
 import PetQRCode from "./pages/PetQRCode";
 import LostPet from "./pages/LostPet";
 import Profile from "./pages/Profile";
+import EditProfile from "./pages/Editprofile";
+import ChangePassword from "./pages/Changepassword";
 
 // Public pages: top navbar + footer
 const PublicLayout = () => (
@@ -71,6 +73,8 @@ const App = () => (
       <Route path="/pets/:id/qr" element={<PetQRCode />} />
       <Route path="/lost" element={<LostPet />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/profile/edit" element={<EditProfile />} />
+      <Route path="/change-password" element={<ChangePassword />} />
     </Route>
 
     <Route element={<PublicLayout />}>

@@ -30,6 +30,18 @@ export const uploadProfilePhoto = makeThunk("auth/uploadPhoto", async (file) => 
   return res.data.user;
 });
 
+// Update name / phone
+export const updateProfile = makeThunk("auth/updateProfile", async (data) => {
+  const res = await api.put("/auth/profile", data);
+  return res.data.user;
+});
+
+// Change password while logged in
+export const changePassword = makeThunk("auth/changePassword", async (data) => {
+  const res = await api.put("/auth/change-password", data);
+  return res.data.message;
+});
+
 // Step 1: email an OTP
 export const forgotPassword = makeThunk("auth/forgot", async (email) => {
   const res = await api.post("/auth/forgot-password", { email });
@@ -79,6 +91,7 @@ const authSlice = createSlice({
       .addCase(resetPassword.fulfilled, setSession)
       .addCase(fetchMe.fulfilled, mergeUser)
       .addCase(uploadProfilePhoto.fulfilled, mergeUser)
+      .addCase(updateProfile.fulfilled, mergeUser)
       .addCase(forgotPassword.fulfilled, (state, action) => {
         state.message = action.payload;
       })

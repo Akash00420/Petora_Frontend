@@ -529,6 +529,8 @@ input[type="file"] { padding: 0.5rem; }
 }
 
 .user-avatar {
+  overflow: hidden;
+  flex-shrink: 0;
   width: 26px;
   height: 26px;
   border-radius: 50%;
@@ -538,6 +540,12 @@ input[type="file"] { padding: 0.5rem; }
   place-items: center;
   font-size: 0.72rem;
   font-weight: 800;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .logout-btn {
@@ -1239,7 +1247,7 @@ input[type="file"] { padding: 0.5rem; }
   object-fit: cover;
   border-radius: inherit;
 }
-.profile-photo.avatar span {
+.profile-photo > span {
   font-size: 3rem;
   font-weight: 800;
   color: var(--primary);
@@ -1259,6 +1267,14 @@ input[type="file"] { padding: 0.5rem; }
   place-items: center;
   cursor: pointer;
 }
+
+.profile-photo.uploading img { opacity: 0.5; }
+
+.photo-edit:hover:not(:disabled) {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+.photo-edit:disabled { cursor: wait; opacity: 0.7; }
 
 .photo-hint {
   font-size: 0.7rem;
@@ -1407,22 +1423,6 @@ input[type="file"] { padding: 0.5rem; }
   font-size: 0.8rem;
 }
 .info-line span { color: var(--muted); }
-.profile-photo > span {
-  font-size: 3rem;
-  font-weight: 800;
-  color: var(--primary);
-}
-
-.profile-photo.uploading img { opacity: 0.5; }
-
-.photo-edit:hover:not(:disabled) {
-  color: var(--primary);
-  border-color: var(--primary);
-}
-.photo-edit:disabled { cursor: wait; opacity: 0.7; }
-
-.user-avatar { overflow: hidden; }
-.user-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
 /* ==========================================================
    QR PAGE
@@ -1937,9 +1937,105 @@ input[type="file"] { padding: 0.5rem; }
     border: 1px solid #000;
   }
 }
-.profile-photo > span { font-size: 3rem; font-weight: 800; color: var(--primary); }
-.profile-photo.uploading img { opacity: 0.5; }
-.photo-edit:hover:not(:disabled) { color: var(--primary); border-color: var(--primary); }
-.photo-edit:disabled { cursor: wait; opacity: 0.7; }
-.user-avatar { overflow: hidden; }
-.user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ==========================================================
+   ACCOUNT PAGES (Edit profile / Change password)
+   ========================================================== */
+.account-page { max-width: 640px; margin: 0; }
+
+.account-page .breadcrumb a { color: var(--muted); }
+.account-page .breadcrumb a:hover { color: var(--primary); }
+
+.acct-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding: 1.6rem;
+}
+
+.acct-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.acct-field label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #3a4a5c;
+}
+
+.acct-input { position: relative; }
+.acct-input > svg:first-child {
+  position: absolute;
+  left: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+}
+.acct-input input {
+  padding: 0.75rem 2.6rem 0.75rem 2.5rem;
+  border-radius: 0.7rem;
+  font-size: 0.9rem;
+}
+.acct-input.is-readonly input {
+  background: #f4f7f9;
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.acct-eye {
+  position: absolute;
+  right: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.acct-eye:hover { color: var(--primary); background: var(--primary-soft); }
+
+.acct-hint {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.acct-note {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  background: #eefaf6;
+  border: 1px solid #c8eee1;
+  border-radius: 0.7rem;
+  color: var(--primary-dark);
+}
+.acct-note svg { flex-shrink: 0; }
+.acct-note p {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #2f5d54;
+}
+
+.acct-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.7rem;
+  margin-top: 0.2rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--border);
+}
+.acct-footer .btn {
+  font-size: 0.85rem;
+  padding: 0.65rem 1.3rem;
+}
+
+@media (max-width: 600px) {
+  .acct-footer .btn { flex: 1; }
+}
