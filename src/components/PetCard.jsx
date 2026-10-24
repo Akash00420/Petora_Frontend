@@ -1,31 +1,34 @@
 import { Link } from "react-router-dom";
+import { QrCode } from "lucide-react";
 import { fileUrl, speciesEmoji } from "../utils/helpers";
 
 const PetCard = ({ pet }) => (
-  <article className={`pet-card${pet.isLost ? " is-lost" : ""}`}>
-    <div className="pet-card-photo">
+  <article className={`pc-card ${pet.isLost ? "is-lost" : ""}`}>
+    <div className="pc-photo">
       {pet.photo ? (
         <img src={fileUrl(pet.photo)} alt={pet.name} />
       ) : (
         <span className="pet-emoji">{speciesEmoji(pet.species)}</span>
       )}
-      {pet.isLost && <span className="badge badge-danger">LOST</span>}
+      <span className={`pc-status ${pet.isLost ? "lost" : "safe"}`}>
+        {pet.isLost ? "Lost" : "Safe at Home"}
+      </span>
     </div>
 
-    <div className="pet-card-body">
+    <div className="pc-body">
       <h3>{pet.name}</h3>
-      <p className="muted">
+      <p className="pc-meta">
         {pet.species}
         {pet.breed ? ` · ${pet.breed}` : ""}
       </p>
-      <span className="pet-code">{pet.petId}</span>
+      <span className="pc-code">{pet.petId}</span>
 
-      <div className="card-actions">
-        <Link className="btn btn-primary btn-sm" to={`/pets/${pet._id}`}>
+      <div className="pc-actions">
+        <Link to={`/pets/${pet._id}`} className="btn btn-primary">
           View
         </Link>
-        <Link className="btn btn-outline btn-sm" to={`/pets/${pet._id}/qr`}>
-          QR
+        <Link to={`/pets/${pet._id}/qr`} className="btn btn-outline">
+          <QrCode size={13} /> QR
         </Link>
       </div>
     </div>

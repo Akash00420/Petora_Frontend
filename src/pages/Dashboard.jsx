@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { Plus } from "lucide-react";
 import { fetchPets } from "../Reducer/PetSlice";
 import { fetchMyLostReports } from "../Reducer/LostSlice";
 import { findActiveReport } from "../utils/helpers";
@@ -25,29 +26,29 @@ const Dashboard = () => {
   if (loading && pets.length === 0) return <Loader text="Loading your dashboard..." />;
 
   return (
-    <>
+    <div className="dash-page">
       <div className="page-header">
         <div>
           <h1>Hello, {user?.name?.split(" ")[0] || "there"} 👋</h1>
-          <p className="muted">Here's how your pets are doing.</p>
+          <p className="page-sub">Here's how your pets are doing.</p>
         </div>
         <Link to="/pets/add" className="btn btn-primary">
-          + Add pet
+          <Plus size={15} /> Add pet
         </Link>
       </div>
 
       <div className="stats-grid">
         <div className="card stat-card">
           <span className="stat-value">{pets.length}</span>
-          <span className="muted">Pets registered</span>
+          <span className="stat-label">Pets registered</span>
         </div>
         <div className="card stat-card">
-          <span className={`stat-value${lostPets.length ? " danger" : ""}`}>{lostPets.length}</span>
-          <span className="muted">Currently lost</span>
+          <span className={`stat-value ${lostPets.length ? "danger" : "neutral"}`}>{lostPets.length}</span>
+          <span className="stat-label">Currently lost</span>
         </div>
         <div className="card stat-card">
           <span className="stat-value">{resolvedCount}</span>
-          <span className="muted">Reunited</span>
+          <span className="stat-label">Reunited</span>
         </div>
       </div>
 
@@ -59,7 +60,11 @@ const Dashboard = () => {
 
       <div className="section-title">
         <h2>Your pets</h2>
-        {pets.length > 4 && <Link to="/pets">View all</Link>}
+        {pets.length > 4 ? (
+          <Link to="/pets" className="count-pill link">View all ({pets.length})</Link>
+        ) : (
+          <span className="count-pill">{pets.length} total</span>
+        )}
       </div>
 
       {pets.length === 0 ? (
@@ -68,17 +73,23 @@ const Dashboard = () => {
           <h3>No pets yet</h3>
           <p className="muted">Add your first pet to generate its QR tag.</p>
           <Link to="/pets/add" className="btn btn-primary">
-            Add your first pet
+            <Plus size={15} /> Add your first pet
           </Link>
         </div>
       ) : (
-        <div className="pet-grid">
+        <div className="pc-grid">
           {pets.slice(0, 4).map((pet) => (
             <PetCard key={pet._id} pet={pet} />
           ))}
+
+          <Link to="/pets/add" className="pc-add">
+            <Plus size={18} />
+            <strong>Register another pet</strong>
+            <span>Generate a printable smart QR tag and safe profile.</span>
+          </Link>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
