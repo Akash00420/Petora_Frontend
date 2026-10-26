@@ -8,6 +8,7 @@ import { deviceLabel, findActiveReport, formatDateTime, thunkError } from "../ut
 import Loader from "../components/Loader";
 import LostPetBanner from "../components/LostPetBanner";
 import PetProfileCard from "../components/PetProfileCard";
+import PetHealthCard from "../components/PetHealthCard";
 
 const PetDetails = () => {
   const { id } = useParams();
@@ -92,6 +93,9 @@ const PetDetails = () => {
       )}
 
       <PetProfileCard pet={pet} />
+
+      {/* owner view: public + private health details */}
+      <PetHealthCard pet={pet} showPrivate />
 
       <div className="section-title">
         <h2>Scan history</h2>

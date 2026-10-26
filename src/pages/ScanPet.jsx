@@ -5,6 +5,7 @@ import { clearPublicPet, fetchPublicPet } from "../Reducer/PetSlice";
 import Loader from "../components/Loader";
 import LostPetBanner from "../components/LostPetBanner";
 import PetProfileCard from "../components/PetProfileCard";
+import PetHealthCard from "../components/PetHealthCard";
 
 // Public page opened when a QR tag is scanned: /scan/:petId
 // Without a code in the URL it shows a box to type the PET-XXXXXX code manually.
@@ -75,6 +76,9 @@ const ScanPet = () => {
       )}
 
       <PetProfileCard pet={publicPet} />
+
+      {/* public safety info only: caution, medical alert (if shown on tag), vaccinations */}
+      <PetHealthCard pet={publicPet} />
 
       {publicPet.ownerPhone ? (
         <a className="btn btn-primary btn-block btn-lg" href={`tel:${publicPet.ownerPhone}`}>
