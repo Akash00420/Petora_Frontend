@@ -1,7 +1,11 @@
-import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-})
+  server: {
+    host: true,        // listen on the network, not just localhost
+    port: 5173,
+    strictPort: true,  // fail instead of silently switching to 5174
+  },
+});
